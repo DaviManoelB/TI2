@@ -1,0 +1,87 @@
+package EX3TI;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class LivroDAO extends DAO {
+    
+    public LivroDAO() {
+        super();
+        conectar();
+    }
+
+    public void finalize() {
+        close();
+    }
+
+    public boolean insert(Livro livro) {
+        boolean status = false;
+        try {  
+            Statement st = conexao.createStatement();
+            String sql = "INSERT INTO livro (nome, preco, genero) "
+                       + "VALUES ('" + livro.getNome() + "', " + livro.getPreco() 
+                       + ", '" + livro.getGenero() + "');";
+            st.executeUpdate(sql);
+            st.close();
+            status = true;
+        } catch (SQLException u) {  
+            throw new RuntimeException(u);
+        }
+        return status;
+    }
+
+    public boolean update(Livro livro, int id) {
+        boolean status = false;
+        try {  
+            Statement st = conexao.createStatement();
+            String sql = "UPDATE livro SET nome = '" + livro.getNome() + "', preco = "  
+                       + livro.getPreco() + ", genero = '" + livro.getGenero() + "'"
+                       + " WHERE id = " + id;
+            st.executeUpdate(sql);
+            st.close();
+            status = true;
+        } catch (SQLException u) {  
+            throw new RuntimeException(u);
+        }
+        return status;
+    }
+
+    public boolean delete(int id) {
+        boolean status = false;
+        try {  
+            Statement st = conexao.createStatement();
+            String sql = "DELETE FROM livro WHERE id = " + id;
+            st.executeUpdate(sql);
+            st.close();
+            status = true;
+        } catch (SQLException u) {  
+            throw new RuntimeException(u);
+        }
+        return status;
+    }
+
+    public List<Livro> list(int id1, int id2) {
+        List<Livro> livros = new ArrayList<>();
+        try {  
+            Statement st = conexao.createStatement();
+            String sql = "SELECT * FROM livro WHERE id BETWEEN " + id1 + " AND " + id2;
+            ResultSet rs = st.executeQuery(sql);
+            
+            while(rs.next()) {
+                Livro livro = new Livro();
+                livro.setNome(rs.getString("nome"));
+                livro.setPreco(rs.getDouble("preco"));
+                livro.setGenero(rs.getString("genero"));
+                livros.add(livro);
+            }
+
+            rs.close();
+            st.close();
+        } catch (SQLException u) {  
+            throw new RuntimeException(u);
+        }
+
+        return livros;
+    }
+}
